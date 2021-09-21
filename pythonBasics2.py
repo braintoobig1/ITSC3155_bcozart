@@ -20,6 +20,7 @@ def count_threes(n):
  if n>2:
   answer= n//3
  
+ 
  return answer
   
 
