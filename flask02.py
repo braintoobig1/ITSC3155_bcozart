@@ -16,6 +16,7 @@ def index():
     a_user = {'name': 'Brandon', 'email':'bcozart@uncc.edu'} #Here we added a variable (a_user) to store our mock user data and we passed that variable to our template view (index.html) with a label called user.# 
 
     return render_template('index.html' , user = a_user)
+
 @app.route('/notes')
 def get_notes():
     notes = {1: {'title': 'First note', 'text': 'This is my first note', 'date': '10-1-2020'},
@@ -23,6 +24,12 @@ def get_notes():
              }
     return render_template('notes.html', notes=notes)
 
+@app.route('/notes/<note_id>')
+def get_note(note_id):
+    notes = {1: {'title': 'First note', 'text': 'This is my first note', 'date': '10-1-2020'},
+             2: {'title': 'Second note', 'text': 'This is my second note', 'date': '10-2-2020'}
+             }
+    return render_template('note.html', note=notes[int(note_id)])
 
 app.run(host=os.getenv('IP', '127.0.0.1'),port=int(os.getenv('PORT', 5000)),debug=True)
 
