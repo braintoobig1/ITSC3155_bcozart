@@ -41,7 +41,8 @@ def new_note():
     a_user = {'name': 'Brandon', 'email':'bcozart@uncc.edu'} #Here we added a variable (a_user) to store our mock user data and we passed that variable to our template view (index.html) with a label called user.#
     print('request method is', request.method)
     if request.method == 'POST':
-        return '<h1> POST method used for this request </h1>'
+        request_data = request.form
+        return f"data: {request_data} !"
     else:
 
         return render_template('new.html', user = a_user)
