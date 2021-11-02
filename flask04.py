@@ -1,6 +1,7 @@
 # FLASK Tutorial 1 -- We show the bare bones code to get an app up and running
 
 # imports
+from database import db
 from flask import request
 from flask import redirect, url_for
 import os                 # os is used to get environment variables IP & PORT
@@ -9,6 +10,16 @@ from flask import render_template
 
 
 app = Flask(__name__)     # create an app
+#This stuff under here is from the flassk 4 assignment
+
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///flask_note_app.db' #This will create a file called note_app_data.db file in the root directory of our application the first time the application is ran 
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS']= False
+#  Bind SQLAlchemy db object to this Flask app
+db.init_app(app)
+with app.app_context():
+    db.create_all()   # run under the app context
+    
+#this is where it ends
 notes = {1: {'title': 'First note', 'text': 'This is my first note', 'date': '10-1-2020'},
              2: {'title': 'Second note', 'text': 'This is my second note', 'date': '10-2-2020'},
              3: {'title': 'Third note', 'text': 'This is my third note', 'date': '10-3-2020'}
