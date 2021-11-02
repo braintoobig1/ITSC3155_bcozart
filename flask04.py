@@ -1,5 +1,7 @@
 # FLASK Tutorial 1 -- We show the bare bones code to get an app up and running
-
+#imports from flask4 assignment 
+from models import Note as Note
+from models import User as User
 # imports
 from database import db
 from flask import request
@@ -18,37 +20,39 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS']= False
 db.init_app(app)
 with app.app_context():
     db.create_all()   # run under the app context
-    
+
 #this is where it ends
-notes = {1: {'title': 'First note', 'text': 'This is my first note', 'date': '10-1-2020'},
-             2: {'title': 'Second note', 'text': 'This is my second note', 'date': '10-2-2020'},
-             3: {'title': 'Third note', 'text': 'This is my third note', 'date': '10-3-2020'}
-             }
+# notes = {1: {'title': 'First note', 'text': 'This is my first note', 'date': '10-1-2020'},
+#             2: {'title': 'Second note', 'text': 'This is my second note', 'date': '10-2-2020'},
+#             3: {'title': 'Third note', 'text': 'This is my third note', 'date': '10-3-2020'}
+#             }
 
 # @app.route is a decorator. It gives the function "index" special powers.
 # In this case it makes it so anyone going to "your-url/" makes this function
 # get called. What it returns is what is shown as the web page
 @app.route('/index')
 def index():
-    a_user = {'name': 'Brandon', 'email':'bcozart@uncc.edu'} #Here we added a variable (a_user) to store our mock user data and we passed that variable to our template view (index.html) with a label called user.# 
+    a_user = db.session.query(User).filter_by(email='mogli@uncc.edu') #Here we added a variable (a_user) to store our mock user data and we passed that variable to our template view (index.html) with a label called user.# 
 
     return render_template('index.html' , user = a_user)
 
 @app.route('/notes')
 def get_notes():
-    a_user = {'name': 'Brandon', 'email':'bcozart@uncc.edu'} #Here we added a variable (a_user) to store our mock user data and we passed that variable to our template view (index.html) with a label called user.# 
+    a_user = db.session.query(User).filter_by(email='mogli@uncc.edu') #Here we added a variable (a_user) to store our mock user data and we passed that variable to our template view (index.html) with a label called user.# 
     #here
+    my_notes = db.session.query(Note).all()
     return render_template('notes.html', notes=notes , user = a_user)
 
 @app.route('/notes/<note_id>')
 def get_note(note_id):
-    a_user = {'name': 'Brandon', 'email':'bcozart@uncc.edu'}
+    a_user = db.session.query(User).filter_by(email='mogli@uncc.edu')
     #here
+    my_note = db.session.query(Note).filter_by(id=note_id)
     return render_template('note.html', note=notes[int(note_id)], user = a_user)
 
 @app.route('/notes/new', methods=['GET', 'POST'])
 def new_note():
-    a_user = {'name': 'Brandon', 'email':'bcozart@uncc.edu'} #Here we added a variable (a_user) to store our mock user data and we passed that variable to our template view (index.html) with a label called user.#
+     #Here we added a variable (a_user) to store our mock user data and we passed that variable to our template view (index.html) with a label called user.#
     
     if request.method == 'POST':
         title = request.form['title']
@@ -56,12 +60,13 @@ def new_note():
         from datetime import date
         today =date.today()
         today = today.strftime("%m-%d-%Y")
-        id = len(notes)+1
-        notes[id] = {'title': title, 'text': text, 'date': today}
+        new_record = Note(title, text, today)
+        db.session.add(new_record)
+        db.session.commit()
 
-        return redirect(url_for('get_notes', name = user))
+        return redirect(url_for('get_notes'))
     else:
-
+        a_user = db.session.query(User).filter_by(email='mogli@uncc.edu')
         return render_template('new.html', user = a_user)
 
 
