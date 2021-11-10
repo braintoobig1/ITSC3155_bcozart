@@ -90,7 +90,13 @@ def update_note(note_id):
             my_note = db.session.query(Note).filter_by(id=note_id).one()
             return render_template('new.html', note=my_note, user=a_user)
 
+@app.route('/notes/delete/<note_id>', methods=['POST'])
+def delete_note(note_id):
+    my_note = db.session.query(Note).filter_by(id=note_id).one()
+    db.session.delete(my_note)
+    db.session.commit()
 
+    return redirect(url_for('get_notes'))
 
 
     
